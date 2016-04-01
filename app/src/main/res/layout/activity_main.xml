@@ -1,0 +1,123 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+    <!-- Regular Expression input field -->
+    <EditText
+        android:id="@+id/regex_field"
+        android:hint="@string/regex_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/regex_button"
+        android:layout_toStartOf="@+id/regex_button"
+        android:layout_alignBaseline="@+id/regex_button"/>
+
+    <!-- RegEx Filter button -->
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/regex_button_name"
+        android:id="@+id/regex_button"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
+
+    <!-- Jumble input field -->
+    <EditText
+        android:id="@+id/jumble_field"
+        android:hint="@string/jumble_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+
+        android:layout_below="@+id/regex_field"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/jumble_behavior_spinner"
+        android:layout_toStartOf="@+id/jumble_behavior_spinner"
+        android:layout_alignBaseline="@+id/jumble_behavior_spinner"/>
+
+    <!-- Filter behavior select -->
+    <Spinner
+        android:id="@+id/jumble_behavior_spinner"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/jumble_button"
+        android:layout_toLeftOf="@+id/jumble_button"
+        android:layout_alignBottom="@+id/jumble_button">
+
+        </Spinner>
+
+    <!-- JUBMLE: filter start -->
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/jumble_button_name"
+        android:id="@+id/jumble_button"
+        android:layout_below="@+id/regex_button"
+        android:layout_alignLeft="@+id/regex_button"
+        android:layout_alignStart="@+id/regex_button" />
+
+    <!-- Reset button -->
+    <Button
+        android:id="@+id/clear_button"
+        android:text="@string/clear_button_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/jumble_behavior_spinner"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <!-- results list -->
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/match_list"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/minimum_spinner" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="..."
+        android:id="@+id/show_button"
+        android:layout_below="@+id/jumble_behavior_spinner"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignLeft="@+id/jumble_button"
+        android:layout_alignStart="@+id/jumble_button" />
+
+    <!-- Minimum length spinner -->
+    <Spinner
+        android:id="@+id/minimum_spinner"
+        android:layout_width="65dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/clear_button"
+        android:layout_alignParentLeft="true"
+    />
+
+    <!-- Maximum length spinner -->
+    <Spinner
+        android:id="@+id/maximum_spinner"
+        android:layout_width="65dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/minimum_spinner"
+        android:layout_alignTop="@+id/minimum_spinner"
+    />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/length_filter_button"
+        android:layout_alignTop="@+id/minimum_spinner"
+        android:layout_toRightOf="@+id/maximum_spinner"
+        android:text="Filter"
+    />
+
+
+</RelativeLayout>

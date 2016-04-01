@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">DictionaryScan</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Main activity UI elements -->
+    <string name="jumble_hint">jumble...</string>
+    <string name="regex_hint">regular expression...</string>
+    <string name="clear_button_name">Reset</string>
+    <string name="regex_button_name">Filter</string>
+    <string name="jumble_button_name">Filter</string>
+
+    <string-array name="jumble_behavior_options">
+        <item>&gt;</item>
+        <item>=</item>
+        <item>&lt;</item>
+    </string-array>
+
+</resources>
