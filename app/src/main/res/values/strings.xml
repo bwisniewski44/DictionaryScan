@@ -10,6 +10,8 @@
     <string name="clear_button_name">Reset</string>
     <string name="regex_button_name">Filter</string>
     <string name="jumble_button_name">Filter</string>
+    <string name="substitution_hint">Substitution</string>
+    <string name="substitution_button_name">Filter</string>
 
     <string-array name="jumble_behavior_options">
         <item>&gt;</item>

@@ -67,6 +67,23 @@ public class MainActivity extends Activity { // instead of action bar activity
             }
         });
 
+        // Perform substitution filter
+        Button substitutionButton = (Button)findViewById(R.id.substitution_button);
+        substitutionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                collapseKeyboard();
+
+                // Extract text from field
+                EditText et = (EditText)findViewById(R.id.substitution_filter_field);
+                String filterDefinition = et.getText().toString();
+                Filter substitutionFilter = new SubstitutionFilter();
+                Log.d("MAIN", "Preparing to pass '" + filterDefinition + "' into filter activity.");
+                performFilter(substitutionFilter, filterDefinition);
+            }
+        });
+
         // Clear button
         Button clearButton = (Button)findViewById(R.id.clear_button);
         clearButton.setOnClickListener(new View.OnClickListener() {

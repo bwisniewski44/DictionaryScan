@@ -28,6 +28,25 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"/>
 
+    <!-- Substitution Expression input field -->
+    <EditText
+        android:id="@+id/substitution_filter_field"
+        android:hint="@string/substitution_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/substitution_button"
+        android:layout_alignTop="@+id/substitution_button"/>
+
+    <!-- Substitution Filter button -->
+    <Button
+        android:id="@+id/substitution_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/substitution_button_name"
+        android:layout_below="@+id/length_filter_button"
+        android:layout_alignParentRight="true"/>
+
     <!-- Jumble input field -->
     <EditText
         android:id="@+id/jumble_field"
@@ -79,7 +98,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/match_list"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/minimum_spinner" />
+        android:layout_below="@+id/substitution_filter_field" />
 
     <Button
         android:layout_width="wrap_content"
