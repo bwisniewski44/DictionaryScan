@@ -78,7 +78,7 @@ public class MainActivity extends Activity { // instead of action bar activity
                 // Extract text from field
                 EditText et = (EditText)findViewById(R.id.substitution_filter_field);
                 String filterDefinition = et.getText().toString();
-                Filter substitutionFilter = new SubstitutionFilter();
+                Filter substitutionFilter = new ExclusiveSubstitutionFilter();
                 Log.d("MAIN", "Preparing to pass '" + filterDefinition + "' into filter activity.");
                 performFilter(substitutionFilter, filterDefinition);
             }

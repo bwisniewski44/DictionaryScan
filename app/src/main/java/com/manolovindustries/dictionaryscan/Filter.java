@@ -25,4 +25,5 @@ public interface Filter {
      * @return reference to newly-generated filter
      */
     public Filter spawn(String x);
+
 }

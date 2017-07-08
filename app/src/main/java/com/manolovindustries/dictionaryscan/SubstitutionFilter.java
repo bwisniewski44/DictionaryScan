@@ -20,12 +20,11 @@ import static java.lang.System.in;
 
 public class SubstitutionFilter implements Filter {
 
-    private int length;
-    private Map<Character, Set<Integer>> definedPositions;
-    private Set<SubstitutionData> substitutions;
-    private boolean exclusiveMode;
+    protected int length;
+    protected Map<Character, Set<Integer>> knowns;
+    protected Set<SubstitutionData> substitutions;
 
-    private class SubstitutionData {
+    protected class SubstitutionData {
         int leadingPosition;  // leading position of a variable
         Set<Integer> neighborPositions;   // set of indices at which a word must have the same letter
 
@@ -35,23 +34,24 @@ public class SubstitutionFilter implements Filter {
     }
 
     public SubstitutionFilter() {
-        this.definedPositions = new HashMap<Character, Set<Integer>>();
+        this.knowns = new HashMap<Character, Set<Integer>>();
         this.substitutions = new HashSet<SubstitutionData>();
     }
 
     public boolean pass(String w) {
         if (w.length() == this.length) {
 
-            // Ensure that those defined characters are present
-            for (Character ch : definedPositions.keySet()) {
-                for (Integer index : definedPositions.get(ch)) {
-                    if (w.charAt(index) != ch) {
+            // Ensure the known letters are found at each of their respective indices
+            for (Character letter : this.knowns.keySet()) {
+                Set<Integer> indices = this.knowns.get(letter);
+                for (Integer index : indices) {
+                    if (w.charAt(index) != letter) {
                         return false;
                     }
                 }
             }
 
-            // Ensure that those substituted characters match
+            // Ensure that a substitution can be supplied in each position for each variable
             for (SubstitutionData substitution : substitutions) {
                 for (int comparisonIndex : substitution.neighborPositions) {
                     if (w.charAt(substitution.leadingPosition) != w.charAt(comparisonIndex)) {
@@ -66,45 +66,93 @@ public class SubstitutionFilter implements Filter {
         return false;
     }
 
-    public Filter spawn(String definition) {
+    /*
+     *  Sets the state of this SubstitutionFilter.
+     */
+    protected void define(String definition) {
+        this.length = definition.length();
+        this.knowns.clear();
 
-        SubstitutionFilter filter = new SubstitutionFilter();
-        filter.length = definition.length();
-
-        Set<Integer> skipPositions = new HashSet<>();
+        // Proceed to define knowns and substitution variables
+        Set<Integer> processedPositions = new HashSet<>();
         for (int i=0; i<definition.length(); i++) {
-
-            // If this position is not already accounted for...
-            if (!skipPositions.contains(i)) {
-
+            if (!processedPositions.contains(i)) {    // if not already having accounted for this position
+                // For any letter at this position...
                 Character letter = definition.charAt(i);
                 if (Character.isUpperCase(letter) || Character.isLowerCase(letter)) {
-                    boolean isVariable = Character.isUpperCase(letter);
-                    letter = Character.toUpperCase(letter);
+                    boolean isVariable = Character.isUpperCase(letter);     // determine whether it may have plain-text letters substituted into it
+                    letter = Character.toUpperCase(letter);                 // de-sensitize case
 
                     if (isVariable) {
                         SubstitutionData data = new SubstitutionData();
                         data.leadingPosition = i;
 
-                        for (int j = i + 1; j < definition.length(); j++) {
-                            if (definition.charAt(j) == definition.charAt(i)) {
+                        // Search for the variable in the remainder of the definition
+                        for (int j=i+1; j<definition.length(); j++) {
+                            if (definition.charAt(i) == definition.charAt(j)) {
                                 data.neighborPositions.add(j);
-                                skipPositions.add(j);
+                                processedPositions.add(j);
                             }
                         }
-
-                        filter.substitutions.add(data);
-                    } else {
-                        char desensitizedKey = Character.toUpperCase(letter);
-                        if (!filter.definedPositions.containsKey(desensitizedKey)) {
-                            Set<Integer> positions = new HashSet<>();
-                            filter.definedPositions.put(desensitizedKey, positions);
+                        this.substitutions.add(data);
+                    }
+                    else { // if encountering a known letter
+                        // Ensure letter features in 'knowns'
+                        if (!this.knowns.containsKey(letter)) {
+                            Set<Integer> empty = new HashSet<Integer>();
+                            this.knowns.put(letter, empty);
                         }
-                        filter.definedPositions.get(desensitizedKey).add(i);
+                        this.knowns.get(letter).add(i);
                     }
                 }
             }
         }
+    }
+
+    public Filter spawn(String definition) {
+
+        SubstitutionFilter filter = new SubstitutionFilter();
+        filter.define(definition);
+
+        //return filter;
+
+//        SubstitutionFilter filter = new SubstitutionFilter();
+//        filter.length = definition.length();
+//
+//        Set<Integer> skipPositions = new HashSet<>();
+//        for (int i=0; i<definition.length(); i++) {
+//
+//            // If this position is not already accounted for...
+//            if (!skipPositions.contains(i)) {
+//
+//                Character letter = definition.charAt(i);
+//                if (Character.isUpperCase(letter) || Character.isLowerCase(letter)) {
+//                    boolean isVariable = Character.isUpperCase(letter);
+//                    letter = Character.toUpperCase(letter);
+//
+//                    if (isVariable) {
+//                        SubstitutionData data = new SubstitutionData();
+//                        data.leadingPosition = i;
+//
+//                        for (int j = i + 1; j < definition.length(); j++) {
+//                            if (definition.charAt(j) == definition.charAt(i)) {
+//                                data.neighborPositions.add(j);
+//                                skipPositions.add(j);
+//                            }
+//                        }
+//
+//                        filter.substitutions.add(data);
+//                    } else {
+//                        char desensitizedKey = Character.toUpperCase(letter);
+//                        if (!filter.definedPositions.containsKey(desensitizedKey)) {
+//                            Set<Integer> positions = new HashSet<>();
+//                            filter.definedPositions.put(desensitizedKey, positions);
+//                        }
+//                        filter.definedPositions.get(desensitizedKey).add(i);
+//                    }
+//                }
+//            }
+//        }
 
         return filter;
     }
