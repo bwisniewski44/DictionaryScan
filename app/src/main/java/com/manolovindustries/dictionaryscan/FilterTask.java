@@ -70,8 +70,8 @@ public class FilterTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
 
         // Determine thread count
-        final int THREAD_COUNT = Runtime.getRuntime().availableProcessors();
-        Log.d("THREAD TASK", Integer.toString(THREAD_COUNT) + " threads will be spawned.");
+        final int THREAD_COUNT = 2; //Runtime.getRuntime().availableProcessors();
+        Log.d("THREAD TASK", Integer.toString(THREAD_COUNT) + " thread(s) will be spawned.");
         final Thread[] scanners = new Thread[THREAD_COUNT];
 
         final Semaphore readLock = new Semaphore(1, true);
