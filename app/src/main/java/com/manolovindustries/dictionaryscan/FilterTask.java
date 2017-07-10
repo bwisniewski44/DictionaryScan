@@ -70,80 +70,91 @@ public class FilterTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
 
         // Determine thread count
-        final int THREAD_COUNT = 2; //Runtime.getRuntime().availableProcessors();
+        final int THREAD_COUNT = 1; //Runtime.getRuntime().availableProcessors();
         Log.d("THREAD TASK", Integer.toString(THREAD_COUNT) + " thread(s) will be spawned.");
-        final Thread[] scanners = new Thread[THREAD_COUNT];
-
-        final Semaphore readLock = new Semaphore(1, true);
-        final Semaphore writeLock = new Semaphore(1, true);
-
         final WordPool results = new WordPool();
-
         begin = System.currentTimeMillis();
+        if (THREAD_COUNT <= 1) {
+            Log.d("Dictionary", "Filter task will execute on a single thread.");
 
-        // For each thread...
-        for (int i=0; i < THREAD_COUNT; i++) {
+            // Produce the filter
+            Filter filter = master.spawn(definition);
 
-            // Determine its position
-            //final int THREAD_INDEX = i;
+            while (possibilities.size() > 0) {
+                String word = possibilities.remove();
+                if (filter.pass(word)) {
+                    results.add(word);
+                }
+                dlg.incrementProgressBy(1);
+            }
+        } else { // do multi-threading
+            final Thread[] scanners = new Thread[THREAD_COUNT];
 
-            // Define its subroutine
-            scanners[i] = new Thread() {
-                @Override
-                public void run() {
+            final Semaphore readLock = new Semaphore(1, true);
+            final Semaphore writeLock = new Semaphore(1, true);
 
-                    // Generate a filter
-                    Filter filter = master.spawn(definition);
+            //final WordPool results = new WordPool();
 
-                    // While this thread is processing items...
-                    while (true) {
 
-                        // Try to pull a word
-                        String word;
-                        try {
-                            readLock.acquire();                 // acquire a read lock
-                            if (possibilities.size() > 0) {     // read the state of the possibility pool
-                                word = possibilities.remove();  // pull a word if it exists
-                            }
-                            else {                              // if no more possibilities, release and break
-                                readLock.release();             // read lock must be unconditional
+            // For each thread...
+            for (int i = 0; i < THREAD_COUNT; i++) {
+
+                // Determine its position
+                //final int THREAD_INDEX = i;
+
+                // Define its subroutine
+                scanners[i] = new Thread() {
+                    @Override
+                    public void run() {
+
+                        // Generate a filter
+                        Filter filter = master.spawn(definition);
+
+                        // While this thread is processing items...
+                        while (true) {
+
+                            // Try to pull a word
+                            String word;
+                            try {
+                                readLock.acquire();                 // acquire a read lock
+                                if (possibilities.size() > 0) {     // read the state of the possibility pool
+                                    word = possibilities.remove();  // pull a word if it exists
+                                } else {                              // if no more possibilities, release and break
+                                    readLock.release();             // read lock must be unconditional
+                                    break;
+                                }
+                                readLock.release();
+                            } catch (InterruptedException e) {
+                                Log.d("Thread ABORT", e.getMessage());
                                 break;
                             }
-                            readLock.release();
-                        }
-                        catch (InterruptedException e) {
-                            Log.d("Thread ABORT", e.getMessage());
-                            break;
-                        }
 
-                        // If the word passes the filter...
-                        if (filter.pass(word)) {
+                            // If the word passes the filter...
+                            if (filter.pass(word)) {
 
-                            // ... add it to the result
-                            try {
-                                writeLock.acquire();
-                                results.add(word);
-                                writeLock.release();
+                                // ... add it to the result
+                                try {
+                                    writeLock.acquire();
+                                    results.add(word);
+                                    writeLock.release();
+                                } catch (InterruptedException e) {
+                                    Log.d("Thread ABORT", e.getMessage());
+                                }
                             }
-                            catch (InterruptedException e) {
-                                Log.d("Thread ABORT", e.getMessage());
-                            }
+                            dlg.incrementProgressBy(1);
                         }
-                        dlg.incrementProgressBy(1);
                     }
-                }
-            };
-            scanners[i].start();
-        }
-
-        // Wait for all threads to close
-        for (int i=0; i<THREAD_COUNT; i++) {
-            try {
-                scanners[i].join();
-
+                };
+                scanners[i].start();
             }
-            catch (InterruptedException e) {
-                Log.d("THREAD ERROR", e.getMessage());
+
+            // Wait for all threads to close
+            for (int i = 0; i < THREAD_COUNT; i++) {
+                try {
+                    scanners[i].join();
+                } catch (InterruptedException e) {
+                    Log.d("THREAD ERROR", e.getMessage());
+                }
             }
         }
 
@@ -178,6 +189,6 @@ public class FilterTask extends AsyncTask<Void, Void, Void> {
         activity.setLengthBounds(1, activity.dictionary.maxLength());
         activity.beginMatchListPrint();
 
-        Toast.makeText(activity, "Task concluded in " + Long.toString((end-begin)/1000) + " seconds.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, "Task concluded in " + Long.toString((end-begin)) + " ms.", Toast.LENGTH_SHORT).show();
     }
 }
