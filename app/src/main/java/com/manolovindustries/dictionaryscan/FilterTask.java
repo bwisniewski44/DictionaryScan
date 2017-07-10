@@ -60,6 +60,19 @@ public class FilterTask extends AsyncTask<Void, Void, Void> {
     }
 
     /**
+     * Resolves the optimum number of worker threads to
+     * perform the word filtering.
+     *
+     * @return (int) goal thread count
+     */
+    protected int getOptimalWorkerThreadCount() {
+
+        int availableProcessorCount = Runtime.getRuntime().availableProcessors();
+
+        return 1;
+    }
+
+    /**
      * Perform the filtering. Scan over possibilities and
      * put matches into result.
      *
@@ -70,11 +83,12 @@ public class FilterTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
 
         // Determine thread count
-        final int THREAD_COUNT = 1; //Runtime.getRuntime().availableProcessors();
-        Log.d("THREAD TASK", Integer.toString(THREAD_COUNT) + " thread(s) will be spawned.");
+        final int threadCount = getOptimalWorkerThreadCount();
+        //final int THREAD_COUNT = 1; //Runtime.getRuntime().availableProcessors();
+        Log.d("THREAD TASK", Integer.toString(threadCount) + " thread(s) will be spawned.");
         final WordPool results = new WordPool();
         begin = System.currentTimeMillis();
-        if (THREAD_COUNT <= 1) {
+        if (threadCount <= 1) {
             Log.d("Dictionary", "Filter task will execute on a single thread.");
 
             // Produce the filter
@@ -88,7 +102,7 @@ public class FilterTask extends AsyncTask<Void, Void, Void> {
                 dlg.incrementProgressBy(1);
             }
         } else { // do multi-threading
-            final Thread[] scanners = new Thread[THREAD_COUNT];
+            final Thread[] scanners = new Thread[threadCount];
 
             final Semaphore readLock = new Semaphore(1, true);
             final Semaphore writeLock = new Semaphore(1, true);
@@ -97,7 +111,7 @@ public class FilterTask extends AsyncTask<Void, Void, Void> {
 
 
             // For each thread...
-            for (int i = 0; i < THREAD_COUNT; i++) {
+            for (int i = 0; i < threadCount; i++) {
 
                 // Determine its position
                 //final int THREAD_INDEX = i;
@@ -149,7 +163,7 @@ public class FilterTask extends AsyncTask<Void, Void, Void> {
             }
 
             // Wait for all threads to close
-            for (int i = 0; i < THREAD_COUNT; i++) {
+            for (int i = 0; i < threadCount; i++) {
                 try {
                     scanners[i].join();
                 } catch (InterruptedException e) {
