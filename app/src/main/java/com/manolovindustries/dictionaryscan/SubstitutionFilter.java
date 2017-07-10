@@ -114,46 +114,6 @@ public class SubstitutionFilter implements Filter {
         SubstitutionFilter filter = new SubstitutionFilter();
         filter.define(definition);
 
-        //return filter;
-
-//        SubstitutionFilter filter = new SubstitutionFilter();
-//        filter.length = definition.length();
-//
-//        Set<Integer> skipPositions = new HashSet<>();
-//        for (int i=0; i<definition.length(); i++) {
-//
-//            // If this position is not already accounted for...
-//            if (!skipPositions.contains(i)) {
-//
-//                Character letter = definition.charAt(i);
-//                if (Character.isUpperCase(letter) || Character.isLowerCase(letter)) {
-//                    boolean isVariable = Character.isUpperCase(letter);
-//                    letter = Character.toUpperCase(letter);
-//
-//                    if (isVariable) {
-//                        SubstitutionData data = new SubstitutionData();
-//                        data.leadingPosition = i;
-//
-//                        for (int j = i + 1; j < definition.length(); j++) {
-//                            if (definition.charAt(j) == definition.charAt(i)) {
-//                                data.neighborPositions.add(j);
-//                                skipPositions.add(j);
-//                            }
-//                        }
-//
-//                        filter.substitutions.add(data);
-//                    } else {
-//                        char desensitizedKey = Character.toUpperCase(letter);
-//                        if (!filter.definedPositions.containsKey(desensitizedKey)) {
-//                            Set<Integer> positions = new HashSet<>();
-//                            filter.definedPositions.put(desensitizedKey, positions);
-//                        }
-//                        filter.definedPositions.get(desensitizedKey).add(i);
-//                    }
-//                }
-//            }
-//        }
-
         return filter;
     }
 }
